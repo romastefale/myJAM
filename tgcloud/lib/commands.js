@@ -10,7 +10,7 @@ import { reply, typing, sendRich } from './telegram.js';
 import { sendRichCard } from './photo.js';
 import { renderStory } from './story.js';
 import {
-  START_TEXT, helpText, richTrack, escapeHtml, cut, displayName, richTable, mentionUser,
+  START_TEXT, helpText, richTrack, escapeHtml, cut, displayName, richTable, mentionUser, playsText,
   link as anchor, lfmArtist, lfmAlbum, lfmTrack,
 } from './format.js';
 
@@ -170,8 +170,11 @@ export async function albnow(message) {
   });
   const more = info.tracks.length > listed.length ? `<p>+${info.tracks.length - listed.length} faixas</p>` : '';
   const table = richTable([{ text: '#' }, { text: 'Faixa' }, { text: '♫ plays', right: true }], rows);
-  const html = `<h2>${anchor(lfmAlbum(info.artist, info.name), escapeHtml(cut(info.name)))}</h2>` +
-    `<p>${mentionUser(message.from)} · ${anchor(lfmArtist(info.artist), escapeHtml(cut(info.artist)))}</p>${table}${more}`;
+  // mesmo molde do /playing: pessoa em H2, plays da faixa atual em H3 (quando há); o álbum vai no corpo.
+  const mine = counts[listed.indexOf(track.name)];
+  const html = `<h2>${mentionUser(message.from)}</h2>` +
+    (playsText(mine) ? `<h3>${playsText(mine)}</h3>` : '') +
+    `<p>${anchor(lfmAlbum(info.artist, info.name), escapeHtml(cut(info.name)))} — <i>${anchor(lfmArtist(info.artist), escapeHtml(cut(info.artist)))}</i></p>${table}${more}`;
   return sendRichCard(message.chat.id, info.covers, html);
 }
 

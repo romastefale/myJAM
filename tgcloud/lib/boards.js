@@ -108,7 +108,9 @@ export async function rankBoard(chatId, user, lastfmUser, period) {
   }
   if (!artists.length && !tracks.length && !albums.length) return { notice: `Sem reproduções nos ${PERIOD_LABEL[period]}.` };
   const num = (n) => String(n);
-  const sections = [`<h2>Mais ouvidos</h2><p>${mentionUser(user)} · ${PERIOD_LABEL[period]}</p>`];
+  // mesmo molde do /playing: pessoa em H2; sem um só número de plays aqui (são 3 listas), H3 segue
+  // marcando as seções (Artistas/Faixas/Álbuns), como já faz o quadro de ouvintes.
+  const sections = [`<h2>${mentionUser(user)}</h2><p>Mais ouvidos · ${PERIOD_LABEL[period]}</p>`];
   if (artists.length) {
     sections.push('<h3>Artistas</h3>' + richTable(
       [{ text: '#' }, { text: 'Artista' }, { text: '♫ plays', right: true }],
