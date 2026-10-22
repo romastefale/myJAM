@@ -1,0 +1,43 @@
+name: Story com vídeo
+
+# Montagem do vídeo do /tstory: o bot dispara este workflow (API do GitHub, workflow_dispatch) com os dados da
+# faixa e o file_id do vídeo; a rotina desenha o story com o mesmo código do bot, coloca o vídeo no quadrado da
+# capa (corte quadrado pelo centro, até 1 minuto) e devolve o MP4 ao chat. Requer:
+#   - secret TELEGRAM_BOT_TOKEN (token do bot no BotFather; baixa o vídeo e envia o resultado)
+#   - secret GH_DISPATCH_TOKEN ou FINE (token fine-grained com Actions: Read and write só neste repositório; o deploy o
+#                                grava na configuração do bot para ele poder disparar este workflow)
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: "JSON com chat_id, user, track, plays e file_id (enviado pelo bot)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # ffmpeg com libx264 e aac
+      - name: Instalar ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      # Mesmas versões fixadas no bot (assets.js): resvg-wasm 2.6.2, Inter 0.4.2 e DejaVu 2.37.3.
+      - name: Instalar motor de imagem e fontes
+        run: npm i --no-save --no-audit --no-fund @resvg/resvg-wasm@2.6.2 @expo-google-fonts/inter@0.4.2 dejavu-fonts-ttf@2.37.3
+
+      - name: Montar e enviar o vídeo
+        env:
+          STORY_PAYLOAD: ${{ inputs.payload }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: node scripts/story-video.mjs

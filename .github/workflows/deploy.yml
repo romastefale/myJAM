@@ -1,0 +1,100 @@
+name: Deploy (Telegram Serverless)
+
+# Cada push em main que altera o bot publica os módulos (`tgcloud push`) e aplica
+# migrações seguras. Requer:
+#   - secret   TGCLOUD_TOKEN  (BotFather → bot → Serverless → CLI Access → Access token,
+#                              formato app<id>:<secret>; NÃO é o token da Bot API)
+#   - variável OWNER_ID       (ID(s) do dono no Telegram; vira OWNER_IDS em config.js no CI)
+#   - secret   LAST_FM_API_KEY (chave da API do Last.fm; o LAST_FM_SECRET NÃO é usado)
+#   - secret   GH_DISPATCH_TOKEN, ou FINE (opcional; liga o vídeo do /tstory)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tgcloud/**"
+      - "scripts/**"
+      - "tgcloud.jsonc"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+    inputs:
+      migrate_mode:
+        description: "Migração do banco: safe (só aditivas), dry-run (só mostra) ou aplicar-avisos (aplica também os avisos, como remover tabela marcada deprecated)."
+        type: choice
+        options: [safe, dry-run, aplicar-avisos]
+        default: safe
+
+concurrency:
+  group: tgcloud-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TGCLOUD_TOKEN: ${{ secrets.TGCLOUD_TOKEN }}
+      OWNER_ID: ${{ vars.OWNER_ID || secrets.OWNER_ID }}
+      # O nome no GitHub é LAST_FM_API_KEY; o script lê a variável de ambiente LASTFM_API_KEY.
+      LASTFM_API_KEY: ${{ secrets.LAST_FM_API_KEY || vars.LAST_FM_API_KEY }}
+      # opcional: vídeo do /tstory (ver .github/workflows/story-video.yml)
+      DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN || secrets.FINE }}
+      REPO_NAME: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Verificar credenciais
+        run: |
+          if [ -z "$TGCLOUD_TOKEN" ]; then
+            echo "::error::Defina o secret TGCLOUD_TOKEN."
+            exit 1
+          fi
+
+      - run: npm ci
+
+      # O estado local (.tgcloud/) não existe no runner; `fetch` baixa o da nuvem.
+      - name: Sincronizar estado da nuvem
+        run: npm run fetch
+
+      # O runtime não lê variáveis de ambiente: dono e chave do Last.fm são gravados em config.js antes do push.
+      - name: Gravar configuração (OWNER_ID, LASTFM_API_KEY)
+        run: node scripts/apply-config.mjs
+
+      - name: Mudanças a publicar
+        run: npm run status
+
+      # Documentação do CLI: `push` envia só o que mudou, em lote atômico, e depois atualiza o registro
+      # local; `fetch` atualiza esse registro com o estado real da nuvem. Se o `push` terminar com
+      # erro, `fetch` + `push` de novo reconcilia (não envia nada se a nuvem já está igual). Se o
+      # segundo `push` também falhar, o deploy falha.
+      - name: Publicar módulos
+        run: |
+          if ! npm run deploy; then
+            echo "::warning::push terminou com erro; sincronizando o estado (fetch) e repetindo o push"
+            npm run fetch
+            npm run status
+            npm run deploy
+          fi
+
+      # `migrate` sem flag exige terminal; no CI: --safe (aditivas), --dry-run ou --yes (também os avisos).
+      - name: Migrar banco
+        run: |
+          mode="${{ github.event.inputs.migrate_mode || 'safe' }}"
+          case "$mode" in
+            dry-run) npm run migrate -- --dry-run ;;
+            aplicar-avisos) npm run migrate -- --yes ;;
+            *)       npm run migrate -- --safe ;;
+          esac
+
+      - name: Estado do webhook
+        run: npm run webhook
