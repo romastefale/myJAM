@@ -1,0 +1,32 @@
+name: Comandos probe (temporário)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TGCLOUD_TOKEN: ${{ secrets.TGCLOUD_TOKEN }}
+      OWNER_ID: ${{ vars.OWNER_ID || secrets.OWNER_ID }}
+      LASTFM_API_KEY: ${{ secrets.LAST_FM_API_KEY || vars.LAST_FM_API_KEY }}
+      DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN || secrets.FINE }}
+      REPO_NAME: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch
+      - run: node scripts/apply-config.mjs
+      - name: Endpoint temporário
+        run: |
+          mkdir -p tgcloud/endpoints
+          cp scripts/cmd-probe-endpoint.js tgcloud/endpoints/cmdprobe.js
+      - name: Executar no runtime real
+        run: |
+          npm run run -- endpoints/cmdprobe '{}' --ctx '{ initData: { user: { id: 1 } } }' > /tmp/run.txt 2>&1 || { cut -c1-900 /tmp/run.txt | head -80; exit 1; }
+          cut -c1-950 /tmp/run.txt | head -150
