@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>myJAM</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="veil"></div>
+<main class="app">
+  <header class="top frost"><span class="dot"></span><b>myJAM</b><span class="who" id="who"></span></header>
+  <section class="hero">
+    <div class="art" id="art"><span class="live" id="live" hidden></span></div>
+    <h1 id="titulo" hidden></h1>
+    <p class="artist" id="artista" hidden></p>
+    <p class="plays frost" id="plays" hidden></p>
+    <p class="status" id="status">Carregando…</p>
+  </section>
+  <nav class="grid" id="grid">
+    <button class="gb frost" data-cmd="tly"><i class="ic i-tly"></i><span>Letra</span></button>
+    <button class="gb frost" data-cmd="albnow"><i class="ic i-albnow"></i><span>Álbum</span></button>
+    <button class="gb frost" data-cmd="tstory"><i class="ic i-tstory"></i><span>Story</span></button>
+    <button class="gb frost" data-cmd="weekfm"><i class="ic i-weekfm"></i><span>Semana</span></button>
+    <button class="gb frost" data-cmd="monthfm"><i class="ic i-monthfm"></i><span>Mês</span></button>
+    <button class="gb frost" data-cmd="nowp"><i class="ic i-nowp"></i><span>Publicar</span></button>
+    <button class="gb frost" data-cmd="tnowall" id="mosaico"><i class="ic i-mosaico">▦</i><span>Mosaico</span></button>
+    <button class="gb frost" data-cmd="songcharts"><i class="ic i-songcharts"></i><span>Songcharts</span></button>
+    <button class="gb frost" data-cmd="radiofm"><i class="ic i-radiofm"></i><span>RadioFM</span></button>
+  </nav>
+  <p class="toast frost" id="toast" role="status" hidden></p>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
