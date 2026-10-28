@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run fetch
       - run: node scripts/apply-config.mjs
-      - name: ler marca e botão de menu
+      - name: enviar botões de teste ao dono
         run: |
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
-          npx tgcloud run endpoints/diag '{read:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
+          npx tgcloud run endpoints/diag '{send:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"

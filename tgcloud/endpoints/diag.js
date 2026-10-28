@@ -3,6 +3,18 @@ import { api } from 'sdk';
 import { getFlag, setFlag } from '../lib/store.js';
 
 export default async function (input, ctx) {
+  if (input.send) {
+    const id = ctx.initData.user.id;
+    await api.sendMessage({
+      chat_id: id,
+      text: 'Teste de abertura do Mini App. Toque em cada botão e me diga o que acontece.',
+      reply_markup: { inline_keyboard: [
+        [{ text: '1 · Botão inline (web_app)', web_app: { url: 'https://app8786464392.tgcloud.ai/' } }],
+        [{ text: '2 · Mini App principal (t.me)', url: 'https://t.me/myJAMrobot?startapp' }],
+      ] },
+    });
+    return { sent: true };
+  }
   if (input.read) {
     const me = await api.getMe();
     return {
