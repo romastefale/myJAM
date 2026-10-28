@@ -43,11 +43,7 @@ function mostrarFaixa(t) {
   $("#status").hidden = true;
 }
 
-function textoSemFaixa(home) {
-  if (!home.linked) return "Vincule o Last.fm no chat: /lastfm seu_usuario";
-  if (home.unavailable) return "O Last.fm não respondeu agora.";
-  return "Nenhuma faixa no seu histórico.";
-}
+const textoSemFaixa = (home) => (home.linked ? "Nenhuma faixa no seu histórico." : "Vincule o Last.fm no chat: /lastfm seu_usuario");
 
 async function abrir() {
   try {
