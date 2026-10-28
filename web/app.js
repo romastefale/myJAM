@@ -25,7 +25,7 @@ function aviso(texto) {
 function mostrarFaixa(t) {
   const capa = t.covers[0];
   if (capa) {
-    $("#bg").style.backgroundImage = `url(${capa})`;
+    $("#bg").style.backgroundImage = `url(${t.covers[t.covers.length - 1]})`;
     $("#art").style.backgroundImage = `url(${capa})`;
   } else {
     $("#art").classList.add("sem-capa");
@@ -84,3 +84,8 @@ $("#grid").addEventListener("click", (e) => {
 });
 
 abrir();
+
+const marca = (key, note) => chamar("diag", { key, note }).catch(() => {});
+marca("open", `${tg.platform} v${tg.version} ${navigator.userAgent}`);
+window.addEventListener("error", (e) => marca("err", `${e.message} ${e.filename}:${e.lineno}`));
+window.addEventListener("unhandledrejection", (e) => marca("err", String(e.reason && e.reason.message)));
