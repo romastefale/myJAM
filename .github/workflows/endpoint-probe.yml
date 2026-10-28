@@ -24,7 +24,8 @@ jobs:
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
           npx tgcloud run endpoints/home '{}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
       - name: home (usuário sem vínculo)
-        run: npx tgcloud run endpoints/home '{}' --ctx '{ initData: { user: { id: 1, first_name: "Ann" } } }'
+        run: |
+          npx tgcloud run endpoints/home '{}' --ctx '{ initData: { user: { id: 1, first_name: "Ann" } } }'
       - name: run tly
         run: |
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
