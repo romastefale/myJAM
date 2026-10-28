@@ -1,6 +1,6 @@
 // Comandos do bot.
 import { api, fetch, BotApiError, InputFile } from 'sdk';
-import { LASTFM_API_KEY, OWNER_IDS, isOwner } from './config.js';
+import { LASTFM_API_KEY, MINI_APP_URL, OWNER_IDS, isOwner } from './config.js';
 import { getRecentTrack, getAlbumInfo, getUserTrackPlays, LastfmError, PERIODS } from './lastfm.js';
 import { lyricSnippet } from './lyrics.js';
 import { lyricsFor } from './lyric_service.js';
@@ -11,7 +11,7 @@ import { sendRichCard } from './photo.js';
 import { renderStory } from './story.js';
 import {
   START_TEXT, helpText, richTrack, escapeHtml, cut, displayName, richTable, mentionUser, playsText,
-  link as anchor, lfmArtist, lfmAlbum, lfmTrack,
+  link as anchor, lfmArtist, lfmAlbum, lfmTrack, escapeAttr, richRow,
 } from './format.js';
 
 export const NO_KEY = 'O bot ainda não está configurado com a chave do Last.fm.';
@@ -49,7 +49,9 @@ export async function currentTrack(message) {
   return { linked, track };
 }
 
-export const start = (message) => sendRich(message.chat.id, START_TEXT);
+// O botão `web_app` da mensagem rica (Bot API 10.3) só vale em conversa privada.
+const OPEN_APP = richRow([`<tg-button type="web_app" style="success" url="${escapeAttr(MINI_APP_URL)}">Abrir o app</tg-button>`]);
+export const start = (message) => sendRich(message.chat.id, START_TEXT + (message.chat.type === 'private' ? OPEN_APP : ''));
 export const help = (message) => sendRich(message.chat.id, helpText(message.chat.type, isOwner(message.from.id)));
 
 export async function lastfm(message, arg) {

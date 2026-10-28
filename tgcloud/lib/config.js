@@ -1,6 +1,9 @@
 // Preenchido no deploy por scripts/apply-config.mjs (a partir das variáveis do GitHub).
 // Não edite os valores aqui: o repositório guarda sempre os valores vazios.
 
+// Endereço do Mini App, impresso pelo `tgcloud push` (https://app<id>.tgcloud.ai/).
+export const MINI_APP_URL = 'https://app8786464392.tgcloud.ai/';
+
 // IDs de usuário do Telegram com permissão de dono. IDs não são segredo.
 export const OWNER_IDS = [];
 
