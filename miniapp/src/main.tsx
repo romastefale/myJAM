@@ -85,6 +85,7 @@ const App = () => {
       </Surface>
       <main>
         <div className="art" style={cover ? { backgroundImage: `url(${cover})` } : undefined}>
+          {track && !cover && <i className="ic nocover" style={{ WebkitMaskImage: "url(/icons/music_note.svg)", maskImage: "url(/icons/music_note.svg)" }} />}
           {track && <span className="live">{track.nowPlaying ? "● AGORA" : "ÚLTIMA"}</span>}
         </div>
         {track ? (

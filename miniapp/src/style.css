@@ -28,3 +28,6 @@ h1{color:var(--text);text-shadow:0 2px 12px rgba(0,0,0,.35);margin-top:18px;font
 .artist.empty{margin-top:24px;text-align:center;padding:0 24px}
 .toast{position:absolute!important;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:10px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:9;white-space:nowrap}
 
+
+.art .nocover{position:absolute;inset:0;margin:auto;width:96px;height:96px;background:currentColor;opacity:.5;-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:contain;mask-repeat:no-repeat;mask-position:center;mask-size:contain}
+.art:not([style]){background:rgba(255,255,255,.08)}
