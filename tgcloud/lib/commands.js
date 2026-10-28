@@ -16,7 +16,6 @@ import {
 
 export const NO_KEY = 'O bot ainda não está configurado com a chave do Last.fm.';
 export const CONNECT_FIRST = 'Conecte antes: <code>/lastfm seu_usuario</code>';
-const MINIAPP_URL = 'https://app8786464392.tgcloud.ai/';
 const NOWP_REQUEST_ID = 1; // request_id do botão que pede a escolha do grupo (/nowp)
 const ALBUM_TRACKS_MAX = 10; // faixas do /albnow com contagem (1 consulta ao Last.fm por faixa)
 const GROUP_MEMBERS_MAX = 10; // quantas consultas ao Last.fm um comando de grupo pode disparar
@@ -295,6 +294,5 @@ export async function setup(message) {
   for (const id of OWNER_IDS) { // os comandos do dono aparecem só no privado de cada dono
     await api.setMyCommands({ commands: [...PRIVATE_COMMANDS, ...OWNER_COMMANDS], scope: { type: 'chat', chat_id: id } });
   }
-  await api.setChatMenuButton({ menu_button: { type: 'web_app', text: 'myJAM', web_app: { url: MINIAPP_URL } } });
-  return reply(message, 'Menu de comandos e botão do Mini App atualizados.');
+  return reply(message, 'Menu de comandos atualizado.');
 }
