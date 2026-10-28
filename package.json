@@ -5,7 +5,8 @@
     "@tgcloud/cli": "^0.2.0"
   },
   "scripts": {
-    "deploy": "tgcloud push",
+    "build": "npm --prefix miniapp ci && npm --prefix miniapp run build",
+    "deploy": "npm run build && tgcloud push",
     "status": "tgcloud status",
     "run": "tgcloud run",
     "fetch": "tgcloud fetch",

@@ -13,6 +13,7 @@ on:
     branches: [main]
     paths:
       - "tgcloud/**"
+      - "miniapp/**"
       - "scripts/**"
       - "tgcloud.jsonc"
       - "package.json"
@@ -61,6 +62,10 @@ jobs:
           fi
 
       - run: npm ci
+
+      # Mini App (miniapp/): o build vira o miniapp/dist que o tgcloud.jsonc publica.
+      - name: Build do Mini App
+        run: npm run build
 
       # O estado local (.tgcloud/) não existe no runner; `fetch` baixa o da nuvem.
       - name: Sincronizar estado da nuvem

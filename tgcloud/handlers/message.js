@@ -5,35 +5,10 @@ import { remember, isSilent } from '../lib/store.js';
 import { isOwner } from '../lib/config.js';
 import * as c from '../lib/commands.js';
 import * as radio from '../lib/radio.js';
-import * as owner from '../lib/owner.js';
 import * as custom from '../lib/story_custom.js';
 import * as canvas from '../lib/canvas.js';
+import { ROUTES } from '../lib/routes.js';
 
-const ROUTES = {
-  start: (m) => c.start(m),
-  help: (m) => c.help(m),
-  lastfm: (m, arg) => c.lastfm(m, arg),
-  lastfmoff: (m) => c.lastfmoff(m),
-  playing: (m) => c.playing(m),
-  tly: (m) => c.tly(m),
-  tstory: async (m) => { if (await c.tstory(m)) await custom.offerCustom(m); },
-  albnow: (m) => c.albnow(m),
-  weekfm: (m) => c.rankOf(m, '7day'),
-  monthfm: (m) => c.rankOf(m, '1month'),
-  nowp: (m) => c.nowp(m),
-  tnow: (m) => c.tnow(m),
-  songcharts: (m, arg) => c.songcharts(m, arg),
-  radiofm: (m, arg) => radio.radiofm(m, arg),
-  myself: (m) => radio.myself(m),
-  tmn: (m, arg) => owner.tmn(m, arg),
-  tpv: (m, arg) => owner.tpv(m, arg),
-  onoff: (m, arg) => owner.onoff(m, arg),
-  tnowall: (m) => owner.tnowall(m),
-  songchartsall: (m, arg) => owner.chartsAll(m, arg, null),
-  weekall: (m) => owner.chartsAll(m, '', '7day'),
-  monthall: (m) => owner.chartsAll(m, '', '1month'),
-  setup: (m) => c.setup(m),
-};
 
 // No modo silencioso (/onoff on), quem não é dono só tem /start e /help.
 const SILENT_OK = ['start', 'help'];
