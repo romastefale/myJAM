@@ -27,3 +27,6 @@ h1{color:var(--text);text-shadow:0 2px 12px rgba(0,0,0,.35);margin-top:18px;font
 .gb.off{opacity:.45}
 .artist.empty{margin-top:24px;text-align:center;padding:0 24px}
 .toast{position:absolute!important;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:10px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:9;white-space:nowrap}
+
+.fatal{padding:32px 24px;text-align:center;font-size:15px;line-height:1.4}
+.boot{padding:32px 24px;text-align:center;opacity:.7}

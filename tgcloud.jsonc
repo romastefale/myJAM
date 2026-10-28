@@ -1,7 +1,8 @@
 {
   // Mini App (miniapp/, Vite): o build é publicado junto com o bot.
   "static": {
-    "source": "miniapp/dist"
+    "source": "miniapp/dist",
+    "headers": [{ "path": "/*", "set": { "Referrer-Policy": "no-referrer" } }]
   },
   "$schema": "./node_modules/@tgcloud/cli/schema/tgcloud.json"
 }

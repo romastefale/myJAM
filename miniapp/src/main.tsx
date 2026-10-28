@@ -15,13 +15,17 @@ type Tg = {
 const tg = (window as unknown as { Telegram?: { WebApp?: Tg } }).Telegram?.WebApp;
 const call = <T,>(name: string, input: object = {}) =>
   new Promise<T>((ok, fail) => {
-    if (!tg) return fail({ message: "Abra pelo Telegram." });
+    if (!tg?.Serverless?.call) return fail({ message: "Abra este app pelo Telegram." });
     tg.Serverless.call(name, input, (err, res) => (err ? fail(err) : ok(res as T)));
   });
 
 document.documentElement.dataset.theme = tg?.colorScheme === "light" ? "light" : "dark";
-tg?.ready();
-tg?.expand();
+try {
+  tg?.ready();
+  const edge = tg?.colorScheme === "light" ? "#eef0f5" : "#050507";
+  (tg as unknown as { setHeaderColor?(c: string): void; setBackgroundColor?(c: string): void })?.setHeaderColor?.(edge);
+  (tg as unknown as { setBackgroundColor?(c: string): void })?.setBackgroundColor?.(edge);
+} catch { /* sem cores da barra: segue */ }
 
 const isBlink = /Chrome\//.test(navigator.userAgent) && !/iPhone|iPad|iPod/.test(navigator.userAgent);
 
@@ -78,12 +82,23 @@ function usePalette(src: string | null) {
 }
 const mix = (a: number[], b: number[], t: number) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 
-const Surface: React.FC<React.ComponentProps<"div">> = ({ children, className = "", style, ...rest }) =>
-  isBlink ? (
-    <Glass className={`glass ${className}`} optics={CONTROL} style={style} {...(rest as object)}>{children}</Glass>
-  ) : (
+class Safe extends React.Component<{ fallback: React.ReactNode; children: React.ReactNode }, { bad: boolean }> {
+  state = { bad: false };
+  static getDerivedStateFromError() { return { bad: true }; }
+  componentDidCatch(e: unknown) { console.error(e); }
+  render() { return this.state.bad ? this.props.fallback : this.props.children; }
+}
+
+const Surface: React.FC<React.ComponentProps<"div">> = ({ children, className = "", style, ...rest }) => {
+  const frost = (
     <Frost className={`glass ${className}`} optics={CONTROL} style={style} {...rest}>{children}</Frost>
   );
+  return isBlink ? (
+    <Safe fallback={frost}>
+      <Glass className={`glass ${className}`} optics={CONTROL} style={style} {...(rest as object)}>{children}</Glass>
+    </Safe>
+  ) : frost;
+};
 
 const App = () => {
   const [home, setHome] = useState<Home | null>(null);
@@ -147,7 +162,7 @@ const App = () => {
             return (
               <Surface key={label} className={`gb${off ? " off" : ""}`} style={{ ["--c" as string]: tints[i] }}>
                 <button disabled={off || !!busy} onClick={() => run(command)}>
-                  {icon ? <i className="ic" style={{ WebkitMaskImage: `url(/icons/${icon}.svg)`, maskImage: `url(/icons/${icon}.svg)` }} /> : <i>▦</i>}
+                  {icon ? <i className="ic" style={{ WebkitMaskImage: `url(icons/${icon}.svg)`, maskImage: `url(icons/${icon}.svg)` }} /> : <i>▦</i>}
                   <span>{label}</span>
                 </button>
               </Surface>
@@ -159,4 +174,17 @@ const App = () => {
     </div>
   );
 };
-createRoot(document.getElementById("root")!).render(<App />);
+const root = document.getElementById("root")!;
+const showError = (e: unknown) => {
+  root.textContent = "";
+  const p = document.createElement("p");
+  p.className = "fatal";
+  p.textContent = "Não consegui abrir: " + ((e as { message?: string })?.message || String(e));
+  root.append(p);
+};
+window.addEventListener("error", (ev) => showError(ev.error || ev.message));
+window.addEventListener("unhandledrejection", (ev) => console.error(ev.reason));
+try {
+  root.textContent = "";
+  createRoot(root).render(<Safe fallback={<p className="fatal">Não consegui abrir o app.</p>}><App /></Safe>);
+} catch (e) { showError(e); }
