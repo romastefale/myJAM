@@ -1,0 +1,33 @@
+name: Site probe (temporário)
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Arquivos publicados
+        run: |
+          U=https://app8786464392.tgcloud.ai
+          for p in / /style.css /app.js /icons/radio.svg /icons/music_note.svg; do
+            printf '%s -> ' "$p"; curl -sS -m 20 -o /dev/null -w '%{http_code} %{content_type} %{size_download}B\n' "$U$p"
+          done
+          curl -sSI -m 20 "$U/" | grep -i 'referrer-policy'
+          echo "--- index.html"; curl -sS -m 20 "$U/" | head -12
+      - name: Abrir no Chromium
+        run: |
+          mkdir /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i playwright >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+          cat > run.mjs <<'EOF'
+          import { chromium } from "playwright";
+          const b = await chromium.launch();
+          const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+          p.on("console", m => console.log("console:", m.type(), m.text().slice(0, 200)));
+          p.on("pageerror", e => console.log("pageerror:", e.message.slice(0, 300)));
+          p.on("requestfailed", r => console.log("requestfailed:", r.url(), r.failure()?.errorText));
+          await p.goto("https://app8786464392.tgcloud.ai/", { waitUntil: "networkidle" });
+          await p.waitForTimeout(1500);
+          console.log("BODY:", (await p.innerText("body")).replace(/\n/g, " | ").slice(0, 300));
+          await b.close();
+          EOF
+          node run.mjs
