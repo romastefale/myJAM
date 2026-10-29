@@ -15,6 +15,22 @@ export default async function (input, ctx) {
     });
     return { sent: true };
   }
+  if (input.cmds) {
+    const id = ctx.initData.user.id;
+    const out = {};
+    for (const [nome, extra] of [
+      ['default', {}],
+      ['privado', { scope: { type: 'all_private_chats' } }],
+      ['grupos', { scope: { type: 'all_group_chats' } }],
+      ['admins', { scope: { type: 'all_chat_administrators' } }],
+      ['dono', { scope: { type: 'chat', chat_id: id } }],
+      ['pt', { language_code: 'pt' }],
+      ['en', { language_code: 'en' }],
+    ]) {
+      out[nome] = (await api.getMyCommands(extra)).map((c) => c.command).join(' ');
+    }
+    return out;
+  }
   if (input.read) {
     const me = await api.getMe();
     return {

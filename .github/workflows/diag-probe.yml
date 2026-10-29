@@ -26,4 +26,4 @@ jobs:
       - name: enviar links de teste ao dono
         run: |
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
-          npx tgcloud run endpoints/diag '{send:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
+          npx tgcloud run endpoints/diag '{cmds:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
