@@ -1,5 +1,7 @@
 {
   // Mini App: o front-end é a pasta `web/` (sem build; `push` envia o que está no disco).
-  "static": false,
+  "static": {
+    "source": "web"
+  },
   "$schema": "./node_modules/@tgcloud/cli/schema/tgcloud.json"
 }
