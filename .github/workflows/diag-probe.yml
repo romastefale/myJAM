@@ -1,5 +1,9 @@
 name: Diag probe (temporário)
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/diag-probe.yml"
 permissions:
   contents: read
 jobs:
@@ -19,7 +23,13 @@ jobs:
       - run: npm ci
       - run: npm run fetch
       - run: node scripts/apply-config.mjs
-      - name: enviar botões de teste ao dono
+      - name: ler a marca (falha se o app nunca abriu)
+        id: marca
         run: |
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
-          npx tgcloud run endpoints/diag '{send:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
+          npx tgcloud run endpoints/diag '{read:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }" > /tmp/diag.txt
+          grep -o "open:[^,]*,err:[^,]*" /tmp/diag.txt | sed 's/[0-9]\{6,\}/N/g' > /tmp/resumo.txt || true
+          cat /tmp/resumo.txt
+          ! grep -q "open:null" /tmp/diag.txt
+      - name: erro de JavaScript registrado? (falha se houver)
+        run: grep -q "err:null" /tmp/diag.txt
