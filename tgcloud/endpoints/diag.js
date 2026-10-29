@@ -7,10 +7,11 @@ export default async function (input, ctx) {
     const id = ctx.initData.user.id;
     await api.sendMessage({
       chat_id: id,
-      text: 'Teste de abertura do Mini App. Toque em cada botão e me diga o que acontece.',
+      text: 'Teste 2 de abertura. Toque em A, B e C e me diga quais abrem.',
       reply_markup: { inline_keyboard: [
-        [{ text: '1 · Botão inline (web_app)', web_app: { url: 'https://app8786464392.tgcloud.ai/' } }],
-        [{ text: '2 · Mini App principal (t.me)', url: 'https://t.me/myJAMrobot?startapp' }],
+        [{ text: 'A · myJAM (nosso endereço)', web_app: { url: 'https://app8786464392.tgcloud.ai/' } }],
+        [{ text: 'B · abafigurinhas (endereço que funciona)', web_app: { url: 'https://app8669881629.tgcloud.ai/' } }],
+        [{ text: 'C · página externa qualquer', web_app: { url: 'https://example.com/' } }],
       ] },
     });
     return { sent: true };
