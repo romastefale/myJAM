@@ -1,0 +1,23 @@
+name: Net probe (temporário)
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: DNS e tempos dos dois endereços
+        run: |
+          for H in app8786464392.tgcloud.ai app8669881629.tgcloud.ai; do
+            echo "=================== $H"
+            echo "--- DNS (A / AAAA)"
+            getent ahostsv4 $H | head -3
+            getent ahostsv6 $H | head -3 || true
+            for V in 4 6; do
+              echo "--- curl IPv$V"
+              curl -$V -sS -m 15 -o /dev/null -w "http=%{http_code} dns=%{time_namelookup}s conexao=%{time_connect}s tls=%{time_appconnect}s primeiro_byte=%{time_starttransfer}s total=%{time_total}s ip=%{remote_ip}\n" https://$H/ 2>&1 || echo "falhou IPv$V"
+            done
+            echo "--- cabeçalhos"
+            curl -sSI -m 15 https://$H/ 2>&1 | head -12
+          done
