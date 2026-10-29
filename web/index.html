@@ -5,33 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js?64"></script>
 <title>myJAM</title>
-<link rel="stylesheet" href="./style.css">
 </head>
-<body>
-<div class="bg" id="bg"></div>
-<div class="veil"></div>
-<main class="app">
-  <header class="top frost"><span class="dot"></span><b>myJAM</b><span class="who" id="who"></span></header>
-  <section class="hero">
-    <div class="art" id="art"><span class="live" id="live" hidden></span></div>
-    <h1 id="titulo" hidden></h1>
-    <p class="artist" id="artista" hidden></p>
-    <p class="plays frost" id="plays" hidden></p>
-    <p class="status" id="status">Carregando…</p>
-  </section>
-  <nav class="grid" id="grid">
-    <button class="gb frost" data-cmd="tly"><i class="ic i-tly"></i><span>Letra</span></button>
-    <button class="gb frost" data-cmd="albnow"><i class="ic i-albnow"></i><span>Álbum</span></button>
-    <button class="gb frost" data-cmd="tstory"><i class="ic i-tstory"></i><span>Story</span></button>
-    <button class="gb frost" data-cmd="weekfm"><i class="ic i-weekfm"></i><span>Semana</span></button>
-    <button class="gb frost" data-cmd="monthfm"><i class="ic i-monthfm"></i><span>Mês</span></button>
-    <button class="gb frost" data-cmd="nowp"><i class="ic i-nowp"></i><span>Publicar</span></button>
-    <button class="gb frost" data-cmd="tnowall" id="mosaico"><i class="ic i-mosaico">▦</i><span>Mosaico</span></button>
-    <button class="gb frost" data-cmd="songcharts"><i class="ic i-songcharts"></i><span>Songcharts</span></button>
-    <button class="gb frost" data-cmd="radiofm"><i class="ic i-radiofm"></i><span>RadioFM</span></button>
-  </nav>
-  <p class="toast frost" id="toast" role="status" hidden></p>
-</main>
-<script type="module" src="./app.js"></script>
+<body style="margin:0;display:grid;place-items:center;min-height:100vh;font-family:system-ui;background:#111;color:#fff">
+<p id="t">myJAM: página mínima carregada</p>
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.Serverless.call("diag", { key: "open", note: "pagina-minima " + tg.platform + " v" + tg.version }, (err) => {
+  document.getElementById("t").textContent = err ? "backend: " + err.message : "myJAM: página mínima e backend OK";
+});
+</script>
 </body>
 </html>
