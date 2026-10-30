@@ -67,7 +67,8 @@ export function richTrack(track, user, userPlays) {
 // style: 'primary' | 'success' | 'danger' | 'link' (opcional).
 export const richButton = (label, data, style) =>
   `<tg-button type="callback_data"${style ? ` style="${style}"` : ''} data="${escapeAttr(data)}">${escapeHtml(label)}</tg-button>`;
-export const richRow = (buttons, align = 'center') => `<tg-button-row align="${align}">${buttons.join('')}</tg-button-row>`;
+// align: 'left' | 'center' | 'right'; null deixa a linha sem alinhamento (os botões ocupam a largura da linha).
+export const richRow = (buttons, align = 'center') => `<tg-button-row${align ? ` align="${align}"` : ''}>${buttons.join('')}</tg-button-row>`;
 
 // ---- Mensagens ricas (Bot API 10.3, Rich HTML) para quadros com tabela. Blocos conferidos nas
 // respostas reais do sendRichMessage: h2/h3 → heading, p → paragraph, table → table, tg-time →

@@ -26,11 +26,11 @@ export function reply(message, text, extra = {}) {
 
 // Mensagem rica (Bot API 10.3, sendRichMessage). `photo` (file_id ou InputFile) vira a capa no topo:
 // InputRichMessage.media lista a mídia e o html a usa com <img src="tg://photo?id=…"/>.
-export function sendRich(chatId, html, photo = null, extra = {}) {
+export function sendRich(chatId, html, photo = null) {
   const rich = { html, skip_entity_detection: true };
   if (photo) {
     rich.html = `<img src="tg://photo?id=cover"/>${html}`;
     rich.media = [{ id: 'cover', media: { type: 'photo', media: photo } }];
   }
-  return api.sendRichMessage({ chat_id: chatId, rich_message: rich, ...extra });
+  return api.sendRichMessage({ chat_id: chatId, rich_message: rich });
 }
