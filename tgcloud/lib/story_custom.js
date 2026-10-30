@@ -1,5 +1,6 @@
-// Personalização do /tstory: depois do story, o bot pergunta (Sim/Não); no Sim, a pessoa responde com uma
-// foto (ou vídeo) quadrada e o story é refeito com ela no lugar da capa.
+// Personalização do /tstory: depois do story, o bot faz UMA pergunta com as opções "foto ou vídeo" e "música de
+// 15 segundos" (esta, em story_sound.js). Na primeira, a pessoa responde com uma foto (ou vídeo) quadrada e o story
+// é refeito com ela no lugar da capa.
 // Só o quadrado da capa muda; o layout do story é o mesmo. Foto: entra no quadrado, aqui mesmo. Vídeo (até
 // 1 minuto): o ambiente do bot não tem codificador de vídeo, então a montagem roda no GitHub Actions
 // (.github/workflows/story-video.yml + scripts/story-video.mjs), que devolve o MP4 ao chat.
@@ -12,16 +13,17 @@ import { reply, typing, sendRich } from './telegram.js';
 import { renderStory } from './story.js';
 import { mentionUser, richButton, richRow } from './format.js';
 
-export const STORY_ASK = 'Quer uma versão personalizada com uma foto ou um vídeo quadrado?';
+export const STORY_ASK = 'Quer personalizar este story? Use a sua própria foto ou vídeo, ou acrescente um trecho de música.';
 export const STORY_PROMPT = 'Responda esta mensagem com a foto ou o vídeo quadrado (vídeo de até 1 minuto).';
 const VIDEO_MAX_SECONDS = 60;
 const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
-// Pergunta Sim/Não logo depois do story.
+// Pergunta única logo depois do story: foto ou vídeo (story:yes), música de 15 segundos (sound:yes) ou nada (story:no).
 export function offerCustom(message) {
   const id = message.from.id;
   return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${STORY_ASK}</p>` +
-    richRow([richButton('Sim', `story:yes:${id}`, 'success'), richButton('Não', `story:no:${id}`)]));
+    richRow([richButton('Minha foto ou vídeo', `story:yes:${id}`, 'success'), richButton('Música de 15 s', `sound:yes:${id}`, 'success')]) +
+    richRow([richButton('Agora não', `story:no:${id}`)]));
 }
 
 // Clique em Sim/Não. Sim: pede a mídia com resposta forçada, só para quem pediu (selective: vale para os

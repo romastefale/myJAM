@@ -1,27 +1,18 @@
-// Som no story: depois do /tstory (e da pergunta da foto ou vídeo), o bot pergunta se a pessoa quer o MESMO story
-// com 15 segundos de som. No Sim, o vídeo é montado no GitHub Actions (.github/workflows/story-sound.yml +
+// Música no story: na pergunta única do /tstory (story_custom.js), a opção "Música de 15 s" monta o MESMO story com
+// 15 segundos de som da faixa. O vídeo é montado no GitHub Actions (.github/workflows/story-sound.yml +
 // scripts/story-sound.mjs): o ambiente do bot não tem codificador de vídeo.
 import { api, fetch, BotApiError } from 'sdk';
 import { LASTFM_API_KEY, GITHUB_REPO, GITHUB_DISPATCH_TOKEN } from './config.js';
 import { getUserTrackPlays } from './lastfm.js';
 import { currentTrack } from './commands.js';
 import { lfmDown } from './boards.js';
-import { reply, sendRich } from './telegram.js';
-import { mentionUser, richButton, richRow } from './format.js';
+import { reply } from './telegram.js';
 
-export const SOUND_ASK = 'Quer o story com 15 segundos de som?';
 export const SOUND_SECONDS = 15;
 
-// Pergunta Sim/Não logo depois da pergunta da foto ou vídeo.
-export function offerSound(message) {
-  const id = message.from.id;
-  return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${SOUND_ASK}</p>` +
-    richRow([richButton('Sim', `sound:yes:${id}`, 'success'), richButton('Não', `sound:no:${id}`)]));
-}
-
-// Clique em Sim/Não.
+// Clique em "Música de 15 s".
 export async function soundChoice(query) {
-  const [, choice, owner] = String(query.data).split(':');
+  const owner = String(query.data).split(':')[2];
   const msg = query.message;
   if (!msg) return api.answerCallbackQuery({ callback_query_id: query.id });
   if (Number(owner) !== query.from.id) {
@@ -33,7 +24,6 @@ export async function soundChoice(query) {
   } catch (e) {
     if (!(e instanceof BotApiError)) throw e;
   }
-  if (choice !== 'yes') return;
   return queueSound({ from: query.from, chat: msg.chat });
 }
 
