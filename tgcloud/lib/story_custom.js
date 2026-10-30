@@ -13,18 +13,19 @@ import { reply, typing, sendRich } from './telegram.js';
 import { renderStory } from './story.js';
 import { mentionUser, richButton, richRow } from './format.js';
 
-export const STORY_ASK = 'Quer personalizar este story? Use a sua própria foto ou vídeo, ou acrescente um trecho de música.';
+export const STORY_ASK = 'Quer personalizar este story?';
+const STORY_HINT = 'use a sua própria foto ou vídeo, ou acrescente um trecho de música.';
 export const STORY_PROMPT = 'Responda esta mensagem com a foto ou o vídeo quadrado (vídeo de até 1 minuto).';
 const VIDEO_MAX_SECONDS = 60;
 const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
-// Pergunta única logo depois do story: foto ou vídeo (story:yes) e música de 15s (sound:yes), em verde, na primeira
+// Pergunta única logo depois do story (título em <h2>, como o do /start): foto ou vídeo (story:yes) e música de 15s (sound:yes), em verde, na primeira
 // linha; "Cancelar" (story:no), em vermelho, sozinho na segunda. A Bot API não tem largura para o botão: o texto do
 // Cancelar leva espaços em branco invisíveis (U+2800) dos dois lados para a largura chegar perto da soma dos dois verdes.
 const CANCEL_PAD = '\u2800'.repeat(10);
 export function offerCustom(message) {
   const id = message.from.id;
-  return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${STORY_ASK}</p>` +
+  return sendRich(message.chat.id, `<h2>${STORY_ASK}</h2><p>${mentionUser(message.from)}, ${STORY_HINT}</p>` +
     richRow([richButton('Minha foto ou vídeo', `story:yes:${id}`, 'success'), richButton('Música de 15s', `sound:yes:${id}`, 'success')]) +
     richRow([richButton(`${CANCEL_PAD}Cancelar${CANCEL_PAD}`, `story:no:${id}`, 'danger')], null));
 }
