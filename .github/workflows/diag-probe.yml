@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN || secrets.FINE }}
-      REPO_NAME: ${{ github.repository }}
       TGCLOUD_TOKEN: ${{ secrets.TGCLOUD_TOKEN }}
       OWNER_ID: ${{ vars.OWNER_ID || secrets.OWNER_ID }}
       LASTFM_API_KEY: ${{ secrets.LAST_FM_API_KEY || vars.LAST_FM_API_KEY }}
@@ -25,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run fetch
       - run: node scripts/apply-config.mjs
-      - name: resposta ao pedido de link do /tstory (fluxo real, vídeo com 15 s de som)
+      - name: ler a marca do Mini App
         run: |
           ID=$(echo "$OWNER_ID" | tr -cs '0-9' '\n' | head -1)
-          npx tgcloud run handlers/message "{message_id:7,from:{id:$ID,first_name:\"Dono\"},chat:{id:$ID,type:\"private\"},text:\"https://open.spotify.com/track/463CkQjx2Zk1yXoBuierM9\",reply_to_message:{message_id:6,from:{is_bot:true},text:\"Dono\\nResponda esta mensagem com o link da faixa no Spotify.\",entities:[{type:\"text_mention\",offset:0,length:4,user:{id:$ID}}]}}"
+          npx tgcloud run endpoints/diag '{read:true}' --ctx "{ initData: { user: { id: $ID, first_name: \"Dono\" } } }"
