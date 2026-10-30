@@ -11,19 +11,29 @@ import { currentTrack } from './commands.js';
 import { lfmDown } from './boards.js';
 import { reply, typing, sendRich } from './telegram.js';
 import { renderStory } from './story.js';
-import { mentionUser, richButton, richRow } from './format.js';
+import { mentionUser } from './format.js';
 
 export const STORY_ASK = 'Quer personalizar este story? Use a sua própria foto ou vídeo, ou acrescente um trecho de música.';
 export const STORY_PROMPT = 'Responda esta mensagem com a foto ou o vídeo quadrado (vídeo de até 1 minuto).';
 const VIDEO_MAX_SECONDS = 60;
 const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
-// Pergunta única logo depois do story: foto ou vídeo (story:yes), música de 15 segundos (sound:yes) ou nada (story:no).
+// Pergunta única logo depois do story: foto ou vídeo (story:yes), música de 15 segundos (sound:yes) ou cancelar
+// (story:no). Os botões são o teclado da mensagem (reply_markup): as duas opções dividem a primeira linha e o
+// "Cancelar", em vermelho (style "danger"), ocupa a segunda linha inteira.
 export function offerCustom(message) {
   const id = message.from.id;
-  return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${STORY_ASK}</p>` +
-    richRow([richButton('Minha foto ou vídeo', `story:yes:${id}`, 'success'), richButton('Música de 15 s', `sound:yes:${id}`, 'success')]) +
-    richRow([richButton('Agora não', `story:no:${id}`)]));
+  return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${STORY_ASK}</p>`, null, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: 'Minha foto ou vídeo', callback_data: `story:yes:${id}`, style: 'success' },
+          { text: 'Música de 15 s', callback_data: `sound:yes:${id}`, style: 'success' },
+        ],
+        [{ text: 'Cancelar', callback_data: `story:no:${id}`, style: 'danger' }],
+      ],
+    },
+  });
 }
 
 // Clique em Sim/Não. Sim: pede a mídia com resposta forçada, só para quem pediu (selective: vale para os
