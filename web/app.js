@@ -10,11 +10,6 @@
     tg.Serverless.call(nome, entrada, fim);
   }
 
-  chamar("diag", { key: "open", note: tg.platform + " v" + tg.version }, function () {});
-  window.addEventListener("error", function (e) {
-    chamar("diag", { key: "err", note: e.message + " " + e.filename + ":" + e.lineno }, function () {});
-  });
-
   var botoes = Array.prototype.slice.call(document.querySelectorAll("#grid button"));
   var ocupado = false;
   var dono = false;
