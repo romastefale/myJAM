@@ -3,6 +3,7 @@ import { api, fetch } from 'sdk';
 import { LASTFM_API_KEY } from '../lib/config.js';
 import { getLinked } from '../lib/store.js';
 import { getRecentTrack } from '../lib/lastfm.js';
+import { canvasForLink } from '../lib/spotify_canvas.js';
 import { getFlag, setFlag } from '../lib/store.js';
 
 export default async function (input, ctx) {
@@ -17,6 +18,13 @@ export default async function (input, ctx) {
       ] },
     });
     return { sent: true };
+  }
+  if (input.canvas) {
+    const out = {};
+    for (const id of ['463CkQjx2Zk1yXoBuierM9', '2Fxmhks0bxGSBdJ92vM42m', '6K4t31amVTZDgR3sKmwUJJ', '7MXVkk9YMctZqd1Srtv4MB', '7qiZfU4dY1lWllzX7mPBI3', '5QO79kh1waicV47BqGRL3g', '3KkXRkHbMCARz0aVfEt68P']) {
+      out[id] = await canvasForLink(`https://open.spotify.com/track/${id}`).then((u) => (u ? 'TEM' : 'sem'), (e) => `erro ${e.message}`);
+    }
+    return out;
   }
   if (input.spot) {
     const linked = await getLinked(ctx.initData.user.id);
