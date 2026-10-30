@@ -18,13 +18,15 @@ export const STORY_PROMPT = 'Responda esta mensagem com a foto ou o vídeo quadr
 const VIDEO_MAX_SECONDS = 60;
 const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
-// Pergunta única logo depois do story: foto ou vídeo (story:yes) e música de 15 segundos (sound:yes), em verde, na
-// primeira linha; "Cancelar" (story:no), em vermelho, sozinho na segunda linha.
+// Pergunta única logo depois do story: foto ou vídeo (story:yes) e música de 15s (sound:yes), em verde, na primeira
+// linha; "Cancelar" (story:no), em vermelho, sozinho na segunda. A Bot API não tem largura para o botão: o texto do
+// Cancelar leva espaços em branco invisíveis (U+2800) dos dois lados para a largura chegar perto da soma dos dois verdes.
+const CANCEL_PAD = '\u2800'.repeat(10);
 export function offerCustom(message) {
   const id = message.from.id;
   return sendRich(message.chat.id, `<p>${mentionUser(message.from)}</p><p>${STORY_ASK}</p>` +
-    richRow([richButton('Minha foto ou vídeo', `story:yes:${id}`, 'success'), richButton('Música de 15 s', `sound:yes:${id}`, 'success')]) +
-    richRow([richButton('Cancelar', `story:no:${id}`, 'danger')], null));
+    richRow([richButton('Minha foto ou vídeo', `story:yes:${id}`, 'success'), richButton('Música de 15s', `sound:yes:${id}`, 'success')]) +
+    richRow([richButton(`${CANCEL_PAD}Cancelar${CANCEL_PAD}`, `story:no:${id}`, 'danger')], null));
 }
 
 // Clique em Sim/Não. Sim: pede a mídia com resposta forçada, só para quem pediu (selective: vale para os
