@@ -1,0 +1,39 @@
+name: Story com som
+
+# O bot dispara este workflow (API do GitHub, workflow_dispatch) quando a pessoa responde Sim à pergunta do /tstory:
+# a rotina desenha o mesmo story, junta 15 segundos de som da faixa e devolve o MP4 ao chat. Requer:
+#   - secret TELEGRAM_BOT_TOKEN (token do bot no BotFather; envia o resultado)
+#   - secret GH_DISPATCH_TOKEN ou FINE (mesmo token do vídeo do /tstory)
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: "JSON com chat_id, user, track, plays e audio_seconds (enviado pelo bot)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sound:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      - name: Instalar motor de imagem e fontes
+        run: npm i --no-save --no-audit --no-fund @resvg/resvg-wasm@2.6.2 @expo-google-fonts/inter@0.4.2 dejavu-fonts-ttf@2.37.3
+
+      - name: Montar e enviar o story com som
+        env:
+          STORY_PAYLOAD: ${{ inputs.payload }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: node scripts/story-sound.mjs
