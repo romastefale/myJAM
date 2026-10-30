@@ -46,6 +46,8 @@ export default async function (message) {
     if (radio.isRadioAnswer(message) && !(await silenced(message, 'radiofm'))) return radio.radiofmAnswer(message);
     // mídia enviada em resposta à pergunta do /tstory (foto ou vídeo quadrado)
     if (custom.isCustomReply(message) && !(await silenced(message, 'tstory'))) return guarded(message, 'tstory', () => custom.customReply(message));
+    // link do Spotify em resposta à pergunta do /tstory: story com o Canvas de fundo e 15 s de som
+    if (canvas.isCanvasReply(message) && !(await silenced(message, 'tstory'))) return guarded(message, 'tstory', () => canvas.canvasFromLink(message, { audioSeconds: canvas.STORY_AUDIO_SECONDS }));
     // link de uma faixa do Spotify em qualquer mensagem: story com o Canvas dela de fundo
     if (canvas.extractSpotifyTrackId(message) && !(await silenced(message, 'tcanvas'))) return guarded(message, 'tcanvas', () => canvas.canvasFromLink(message));
     return;

@@ -146,8 +146,11 @@ async function build() {
   if (!res.ok) throw new Error(`baixar o Canvas: HTTP ${res.status}`);
   fs.writeFileSync(inVideo, new Uint8Array(await res.arrayBuffer()));
   const probe = JSON.parse(run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'json', inVideo]));
-  const seconds = Number(probe.format.duration);
-  if (!(seconds > 0)) throw new Error('não consegui ler a duração do vídeo do Canvas');
+  const canvasSeconds = Number(probe.format.duration);
+  if (!(canvasSeconds > 0)) throw new Error('não consegui ler a duração do vídeo do Canvas');
+  // pedido pelo /tstory: o vídeo dura o trecho de som pedido (o Canvas repete em loop); senão, a duração do Canvas.
+  const wanted = Number(payload.audio_seconds) > 0 ? Number(payload.audio_seconds) : 0;
+  const seconds = wanted || canvasSeconds;
 
   // camada na frente (capa, texto, pílula e rodapé — transparente no resto), com o layout do story normal.
   const cover = await coverUri(payload.track.covers);
@@ -162,7 +165,7 @@ async function build() {
   if (preview) fs.writeFileSync(inAudio, preview.bytes);
 
   const out = path.join(dir, 'canvas-story.mp4');
-  const args = ['-y', '-loglevel', 'error', '-i', inVideo, '-loop', '1', '-framerate', '30', '-i', overlayPng];
+  const args = ['-y', '-loglevel', 'error', ...(wanted ? ['-stream_loop', '-1'] : []), '-i', inVideo, '-loop', '1', '-framerate', '30', '-i', overlayPng];
   if (inAudio) args.push('-i', inAudio);
   args.push(
     '-filter_complex',

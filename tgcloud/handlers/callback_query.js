@@ -1,14 +1,15 @@
-// handlers/callback_query.js — cliques nos botões do /radiofm, do /myself e da pergunta do /tstory.
+// handlers/callback_query.js — cliques nos botões do /radiofm, do /myself e das perguntas do /tstory.
 import { api, BotApiError } from 'sdk';
 import { isOwner } from '../lib/config.js';
 import { isSilent } from '../lib/store.js';
 import { radioPick, myselfPick } from '../lib/radio.js';
 import { storyChoice } from '../lib/story_custom.js';
+import { canvasChoice } from '../lib/canvas.js';
 
 export default async function (query) {
   const data = String(query.data || '');
   const kind = data.split(':')[0];
-  const handler = kind === 'radiofm' ? radioPick : kind === 'myself' ? myselfPick : kind === 'story' ? storyChoice : null;
+  const handler = kind === 'radiofm' ? radioPick : kind === 'myself' ? myselfPick : kind === 'story' ? storyChoice : kind === 'canvas' ? canvasChoice : null;
   if (!handler) return api.answerCallbackQuery({ callback_query_id: query.id });
   if (!isOwner(query.from.id) && (await isSilent())) return api.answerCallbackQuery({ callback_query_id: query.id });
   try {

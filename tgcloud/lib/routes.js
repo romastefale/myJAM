@@ -3,6 +3,7 @@ import * as c from './commands.js';
 import * as radio from './radio.js';
 import * as owner from './owner.js';
 import * as custom from './story_custom.js';
+import * as canvas from './canvas.js';
 
 export const ROUTES = {
   start: (m) => c.start(m),
@@ -11,7 +12,7 @@ export const ROUTES = {
   lastfmoff: (m) => c.lastfmoff(m),
   playing: (m) => c.playing(m),
   tly: (m) => c.tly(m),
-  tstory: async (m) => { if (await c.tstory(m)) await custom.offerCustom(m); },
+  tstory: async (m) => { if (await c.tstory(m)) { await custom.offerCustom(m); await canvas.offerCanvas(m); } },
   albnow: (m) => c.albnow(m),
   weekfm: (m) => c.rankOf(m, '7day'),
   monthfm: (m) => c.rankOf(m, '1month'),
