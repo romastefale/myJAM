@@ -2,8 +2,35 @@
   var tg = window.Telegram.WebApp;
   var $ = function (id) { return document.getElementById(id); };
 
-  document.documentElement.setAttribute("data-theme", tg.colorScheme);
-  tg.onEvent("themeChanged", function () { document.documentElement.setAttribute("data-theme", tg.colorScheme); });
+  var fundoImg = null;
+
+  // Fundo: a miniatura da capa vira um quadro pequeno e suave (reduz a 6x10 e amplia), desenhado uma única vez; o
+  // CSS estica o quadro na tela. Sem filtro de desfoque rodando a cada quadro. Uma camada escura por cima, na cor do tema.
+  function pintarFundo() {
+    if (!fundoImg) return;
+    var c = $("bg");
+    var x = c.getContext("2d");
+    var mini = document.createElement("canvas");
+    mini.width = 6;
+    mini.height = 10;
+    var m = mini.getContext("2d");
+    m.imageSmoothingQuality = "high";
+    var largura = fundoImg.width * c.width / c.height;
+    m.drawImage(fundoImg, (fundoImg.width - largura) / 2, 0, largura, fundoImg.height, 0, 0, 6, 10);
+    x.imageSmoothingQuality = "high";
+    x.drawImage(mini, 0, 0, c.width, c.height);
+    x.globalAlpha = 0.42;
+    x.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--base").trim();
+    x.fillRect(0, 0, c.width, c.height);
+    x.globalAlpha = 1;
+  }
+
+  function aplicarTema() {
+    document.documentElement.setAttribute("data-theme", tg.colorScheme);
+    pintarFundo();
+  }
+  aplicarTema();
+  tg.onEvent("themeChanged", aplicarTema);
   tg.ready();
 
   function chamar(nome, entrada, fim) {
@@ -22,7 +49,9 @@
   function mostrarFaixa(t) {
     var capa = t.covers[0];
     if (capa) {
-      $("bg").style.backgroundImage = "url(" + t.covers[t.covers.length - 1] + ")";
+      var im = new Image();
+      im.onload = function () { fundoImg = im; pintarFundo(); };
+      im.src = t.covers[t.covers.length - 1];
       $("art").style.backgroundImage = "url(" + capa + ")";
     } else {
       $("art").className = "nocover";

@@ -13,14 +13,13 @@ html,body{height:100%;background:var(--base);color:var(--text);font-family:-appl
 button{font:inherit;color:inherit;border:0;cursor:pointer}
 [hidden]{display:none!important}
 .frost{background:var(--tint);box-shadow:var(--float)}
-#bg{position:fixed;inset:0;background:center/cover}
-#veil{position:fixed;inset:0;background:var(--base);opacity:.5}
-#app{position:relative;height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;align-items:center;padding:max(12px,env(safe-area-inset-top)) 18px max(16px,env(safe-area-inset-bottom))}
+#bg{position:fixed;inset:0;width:100%;height:100%}
+#app{position:relative;height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;align-items:center;padding:calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px) + 12px) calc(var(--tg-safe-area-inset-right,0px) + var(--tg-content-safe-area-inset-right,0px) + 18px) calc(var(--tg-safe-area-inset-bottom,0px) + var(--tg-content-safe-area-inset-bottom,0px) + 16px) calc(var(--tg-safe-area-inset-left,0px) + var(--tg-content-safe-area-inset-left,0px) + 18px)}
 #top{align-self:stretch;height:44px;border-radius:999px;display:flex;align-items:center;gap:8px;padding:0 18px}
 #who{margin-left:auto;opacity:.7;font-size:14px}
 #dot{width:9px;height:9px;border-radius:50%;background:#2fd1c5}
 #hero{display:flex;flex-direction:column;align-items:center;margin-top:18px;min-height:0}
-#art{position:relative;width:min(300px,calc(var(--tg-viewport-stable-height,100svh) - 430px));min-width:140px;aspect-ratio:1;border-radius:26px;background:rgba(255,255,255,.08) center/cover;box-shadow:0 14px 28px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.18)}
+#art{position:relative;width:min(300px,calc(var(--tg-viewport-stable-height,100svh) - 430px - var(--tg-safe-area-inset-top,0px) - var(--tg-content-safe-area-inset-top,0px) - var(--tg-safe-area-inset-bottom,0px) - var(--tg-content-safe-area-inset-bottom,0px)));min-width:140px;aspect-ratio:1;border-radius:26px;background:rgba(255,255,255,.08) center/cover;box-shadow:0 14px 28px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.18)}
 #art.nocover::after{content:"";position:absolute;inset:0;margin:auto;width:96px;height:96px;background:currentColor;opacity:.5;-webkit-mask:url(icons/music_note.svg) center/contain no-repeat;mask:url(icons/music_note.svg) center/contain no-repeat}
 #live{position:absolute;left:12px;top:12px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;padding:4px 9px;border-radius:99px;background:rgba(0,0,0,.45)}
 #title{margin-top:18px;font-size:26px;font-weight:700;letter-spacing:-.02em;text-align:center}
@@ -40,12 +39,11 @@ button{font:inherit;color:inherit;border:0;cursor:pointer}
 .i-nowp{-webkit-mask-image:url(icons/arrow_upload_ready.svg);mask-image:url(icons/arrow_upload_ready.svg)}
 .i-songcharts{-webkit-mask-image:url(icons/chart_data.svg);mask-image:url(icons/chart_data.svg)}
 .i-radiofm{-webkit-mask-image:url(icons/radio.svg);mask-image:url(icons/radio.svg)}
-#toast{position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:10px 20px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
+#toast{position:fixed;left:50%;bottom:calc(var(--tg-safe-area-inset-bottom,0px) + var(--tg-content-safe-area-inset-bottom,0px) + 8px);transform:translateX(-50%);padding:10px 20px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
 </style>
 </head>
 <body>
-<div id="bg"></div>
-<div id="veil"></div>
+<canvas id="bg" width="48" height="86"></canvas>
 <main id="app">
   <header id="top" class="frost"><span id="dot"></span><b>myJAM</b><span id="who"></span></header>
   <section id="hero">
