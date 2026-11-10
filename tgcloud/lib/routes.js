@@ -3,6 +3,7 @@ import * as c from './commands.js';
 import * as radio from './radio.js';
 import * as owner from './owner.js';
 import * as custom from './story_custom.js';
+import { widgettest } from './live_widget.js';
 
 export const ROUTES = {
   start: (m) => c.start(m),
@@ -10,6 +11,7 @@ export const ROUTES = {
   lastfm: (m, arg) => c.lastfm(m, arg),
   lastfmoff: (m) => c.lastfmoff(m),
   playing: (m) => c.playing(m),
+  widgettest: (m) => widgettest(m),
   tly: (m) => c.tly(m),
   tstory: async (m) => { if (await c.tstory(m)) await custom.offerCustom(m); },
   albnow: (m) => c.albnow(m),
